@@ -5,10 +5,7 @@ require 'open-uri'
 require 'json'
 require 'i18n'
 
-# --------------------
-# scrapable_classes.rb
-# --------------------
-
+# Scrapable classes
 module RestfulApiMethods
 
   def format info
@@ -30,10 +27,6 @@ class PeopleStorage
   end
 
   def post record
-    #######################
-    # for use with morph.io
-    #######################
-
     if ((ScraperWiki.select("* from data where `uid`='#{record['uid']}'").empty?) rescue true)
       # Convert the array record['organizations'] to a string (by converting to json)
       if record['organizations'].is_a? Array
@@ -47,6 +40,7 @@ class PeopleStorage
   end
 end
 
+# The real thing
 class CongressmenProfiles < PeopleStorage
   def initialize()
     super()
@@ -73,11 +67,11 @@ class CongressmenProfiles < PeopleStorage
     end
     record = {
       'uid' => congressman['id'],
-      'name' => I18n.transliterate(congressman['name']),
+      'name' => congressman['name'],
       'chamber' => congressman['title'],
-      'district' => I18n.transliterate(congressman['represent'].first['district']).gsub('?','ta.'),
-      'commune' => I18n.transliterate(congressman['represent'].first['comunas']),
-      'region' => I18n.transliterate(congressman['represent'].first['region']),
+      'district' => congressman['represent'].first['district'].gsub('?','ta.'),
+      'commune' => congressman['represent'].first['comunas'],
+      'region' => congressman['represent'].first['region'],
       'profile_image' => '',
       'organization_id' => '',
       'organizations' => organizations,
@@ -94,21 +88,17 @@ class CongressmenProfiles < PeopleStorage
     popit_membership = response['result']
 
     organizations = Array.new
-    organizations[0] = I18n.transliterate(popit_membership['name'])
+    organizations[0] = popit_membership['name']
     i = 1
     popit_membership['other_names'].each do |organization|
-      organizations[i] = I18n.transliterate(organization['name'])
+      organizations[i] = organization['name']
       i = i + 1
     end
     return organizations
   end
 end
 
-
-# ---------------------
-# congressmen_runner.rb
-# ---------------------
-
+# Runner
 if !(defined? Test::Unit::TestCase)
   CongressmenProfiles.new.process
 end
