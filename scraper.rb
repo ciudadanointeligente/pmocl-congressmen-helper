@@ -67,11 +67,11 @@ class CongressmenProfiles < PeopleStorage
     end
     record = {
       'uid' => congressman['id'],
-      'name' => congressman['name'],
+      'name' => I18n.transliterate(congressman['name']),
       'chamber' => congressman['title'],
       'district' => congressman['represent'].first['district'].gsub('?','ta.'),
-      'commune' => congressman['represent'].first['comunas'],
-      'region' => congressman['represent'].first['region'],
+      'commune' => I18n.transliterate(congressman['represent'].first['comunas']),
+      'region' => I18n.transliterate(congressman['represent'].first['region']),
       'profile_image' => '',
       'organization_id' => '',
       'organizations' => organizations,
